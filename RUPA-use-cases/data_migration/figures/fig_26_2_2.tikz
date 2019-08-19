@@ -1,0 +1,14 @@
+\begin{tikzpicture}[penetration=0, unoriented WD, spacing=50pt, pack size=25pt]
+  \begin{scope}[font=\small]
+  	\node[pack, minimum width] (1) {Source Database};
+	\node[pack, minimum width, right=of 1] (2) {Target Annuity Payor Data};
+	\node[outer pack, fit=(1) (2)] (outer) {};
+  \end{scope}
+	\begin{scope}[font=\fontsize{5pt}{0}\selectfont]
+  		\draw [arrow] (1) to
+			node[pos=-.1] {$$}
+			node[pos=.5, link, label={[above, font=\footnotesize]:$$}] {}
+			node[pos=1.1] {$$}
+			(2);
+  \end{scope}
+\end{tikzpicture}

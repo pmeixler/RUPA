@@ -1,0 +1,192 @@
+%!TEX encoding = UTF-8 Unicode
+\documentclass{article}
+
+
+\usepackage{tikzit}
+\input{standard.tikzstyles}
+\usepackage{cite}
+
+\begin{document}
+\title{Retirement Units Plan Administration (RUPA) Data Migration}
+\author{ }
+\date{}
+\maketitle
+
+%\import{sections/}{/Users/paulmeixler/Desktop/translation/azwADyayI/sarazwADyayI\0-4-SivasUtra.tex} \\
+%\import{.../azwADyayI/sarazwADyayI/0-4-SivasUtra.tex} \\
+
+
+\noindent
+\tableofcontents
+%\listoffigures
+%\listoftables
+%\mainmatter
+%\part{Introduction}
+%\chapter{Objective}
+%\import{sections/}{0-2-StatementofObjective}
+%\chapter{Pilot Whitepaper}
+\section{Overview}
+The purpose of this document is to explain data migration with a real life example, in layman's terms, using Category Theory.  The example comes from an insurance company exiting the pension plan business.   In the example, pension plan data is migrated from the source database based on the RUPA schema to the target database based on the OpenPro Enterprise Resource Planning (ERP) System.  The description of the migration process will be written so one understands and can follow the data being migrated and housed from one database system to the other. Data migration is described as a single arrow of data integration. \\
+
+Data integration involves many arrows from one system to another which becomes an integrated  part of the  architecture.  These arrows represent  the way  data flows between various applications/data stores.  This is a  process  within the AQL tool that can supply data from operational systems to data warehouses which is a necessity for decision making today.  The  problem of data integration still exists today for many organization.  Systems are still operating in the proverbial silos.  For example a purchasing system may exist on it's own without knowledge of it's purchasing budget that is housed in different databases. \\
+
+This document explains how the Categorical Informatics AQL tool delivers robust database integration that will have conceptual clarity and expressive power required for design decisions made with speed, reliability, and accuracy.
+The  AQL tool provides assurance in data tightness with an extra layer of mathematical validation.  The mathematics included in the tool goes through all the integration deductions and gives accurate compilation which leads to validation of the data being moved from a source database to a target database.
+
+\section{Integration Stories}
+
+%Add the Data Migration Process Introduction
+
+The following describes five major user stories for our example of the integration of a pension plan data administration system.  \\
+
+\subsection{User Story 1 – from Target Payroll Data into our Source Database}
+Story \\
+As a payroll specialist, I want to load payroll data provided from an Target employer into the Source database used by our retirement plan administration system.  The payroll data includes hours worked and salary earned for a recent period, and also includes indicative data for recently newly hired employees.  Incomplete data will not be loaded. \\
+\begin{equation}
+  \tikzfig{fig_26_2_1}
+\end{equation}
+Acceptance Criteria \\
+For records in the Target payroll data containing complete data, the data should be matched and mapped to the Source database as follows:  \\
+PlanNumber	Match on Plan.PlanID
+EmployeeSSN	Match on Person.SocialSecurityNumber  \\
+Last	Person.LastName \\
+First	Person.FirstName  \\
+Earnings1	Earnings.BaseSalary  \\
+Hour1	Hours.BaseHours  \\
+AddressLine1	Address.Line1 \\
+
+\subsection{User Story 2 – from our Source Database into Target Annuity Payer Data}
+Story \\
+As a Payer specialist, I want to export retiree data from the Source database used by our retirement plan administration system into a database required by an Target annuity payer.  The retiree data includes only required retiree data that has been changed during a recent period.  Only plan data as indicated by the PlanID and change data as indicated by the StartDate will be exported.  \\
+\begin{equation}
+  \tikzfig{fig_26_2_2}
+\end{equation}
+Acceptance Criteria  \\
+For payment records in the Source database with Plan.PlanID  = ‘111’ and StartDate = ‘ 20170601’, data should be exported into the Target annuity payer format:  \\
+Plan.PlanID = ‘111’	Payment.PlanID  \\
+PaymentHistory.RecordNumber	Payment.PaymentID  \\
+PaymentHistory.StartDate = ‘20170601’	Payment.StartDate  \\
+Person.SocialSecurityNumber	Payment.PayeeSSN  \\
+PaymentHistory.Amount	Payment.Payment1  \\
+Address.Line1	Payment.Address.Street1  \\
+
+\subsection{User Story 3 – from Target Implementation Data into our Source Database, then to into Target Annuity Payer Data}
+Story \\
+As an implementation specialist, I want to load implementation data provided from another Target prior administrator into the Source database used by our retirement plan administration system.  Then, as in User Story 2, I want to export retiree data from the Source database used by our retirement plan administration system into a database required by an Target annuity payer.  All historical data, possible multiple historical payments, will be imported into the Source Database, but as in User Story 2, only change data as indicated by a specific StartDate will be exported. \\
+
+\begin{equation}
+\begin{tikzpicture}[penetration=0, unoriented WD, spacing=50pt, pack size=25pt]
+  \begin{scope}[font=\small]
+  	\node[pack, minimum width] (1) {Target Prior Administrator Data};
+	\node[pack, minimum width, right=of 1] (2) {Source Database};
+	\node[pack, minimum width, right=of 2] (3) {Target Annuity Payor Data};
+	\node[outer pack, fit=(1) (3)] (outer) {};
+  \end{scope}
+	\begin{scope}[font=\fontsize{5pt}{0}\selectfont]
+  		\draw [arrow] (1) to
+			node[pos=-.1] {$$}
+			node[pos=.5, link, label={[above, font=\footnotesize]:$$}] {}
+			node[pos=1.1] {$$}
+			(2);
+		\draw [arrow] (2) to
+			node[pos=-.1] {$$}
+			node[pos=.5, link, label={[above, font=\footnotesize]:$$}] {}
+			node[pos=1.1] {$$}
+			(3);
+  \end{scope}
+\end{tikzpicture}
+\end{equation} \\
+Acceptance Criteria \\
+For implementation data provided from another Target prior administrator, the data should be matched and mapped to the Source database as follow: \\
+Demographic.PlanCode	Plan.PlanID \\
+Demographic.SocSecNum	Person.SocialSecurityNumber \\
+
+For payment records in the Source database with Plan.PlanID  = ‘222’ and StartDate = ‘ 20170701’, data should be exported into the Target annuity data. \\
+The data mapping follows: \\
+Demographic.PlanCode	Plan.PlanID 	Payment.PlanID \\
+Demographic.SocSecNum	Person.SocialSecurityNumber	Payment.PayeeSSN \\
+Demographic.Street1	Address.Line1	Payment.Address.Street1 \\
+Payment.StartDate	PaymentHistory.StartDate	Payment.StartDate \\
+Payment.Payment1	PaymentHistory.Amount	Payment.Payment1 \\
+Amount.Amount1	CalculatedBenfits	null \\
+
+
+\subsection{User Story 4 – Combining 3 Target Data into an Source Database (implementing a new employer)}
+Story \\
+As an implementation specialist, I want to load data from 3 different sources into the Source database used by our retirement plan administration system: \\
+•	Payroll data provided from an Target employer, \\
+•	Implementation retiree data provided from another Target annuity Payer, and \\
+•	Implementation data provided from an Target prior administrator. \\
+Data will be loaded based on business rules. \\
+
+\begin{equation}
+\begin{tikzpicture}[penetration=0, unoriented WD, spacing=50pt, pack size=25pt]
+  \begin{scope}[font=\small]
+  	\node[pack, minimum width] (1) {Target Payroll Data};
+	\node[pack, minimum width, below=of 1] (2) {Target Annuity Payor Data};
+	\node[pack, minimum width, below=of 2] (3) {Target Prior Administrator Data};
+	\node[pack, minimum width, right=of 2] (4) {Source Database};
+	\node[outer pack, fit=(1) (3) (4)] (outer) {};
+  \end{scope}
+	\begin{scope}[font=\fontsize{5pt}{0}\selectfont]
+  		\draw [arrow] (1) to
+			node[pos=-.1] {$$}
+			node[pos=.5, link, label={[above, font=\footnotesize]:$$}] {}
+			node[pos=1.1] {$$}
+			(4);
+		\draw [arrow] (2) to
+			node[pos=-.1] {$$}
+			node[pos=.5, link, label={[above, font=\footnotesize]:$$}] {}
+			node[pos=1.1] {$$}
+			(4);
+		\draw [arrow] (3) to
+			node[pos=-.1] {$$}
+			node[pos=.5, link, label={[above, font=\footnotesize]:$$}] {}
+			node[pos=1.1] {$$}
+			(4);
+  \end{scope}
+\end{tikzpicture}
+\end{equation} \\
+
+Acceptance Criteria \\
+A person to be loaded into the Source database may have records in each of the 3 Target data sets.  The data to be loaded into the Source database in Address.Line1 is based on the following business rule.  The Target prior administrator data will be loaded first, where Demographic.CurrentStatus is loaded to EmployeeStatusHistory.Status and Demographic.Street1 is loaded to Address.Line1.  The Target payroll data will be loaded second and when a record exists for a person, the EmployeeStatusHistory.Status = ‘Active’ and Address.Line1 = AddressLine1.  The Target annuity payer data will be loaded third and when a record exists for a person, the EmployeeStatusHistory.Status = ‘Retired’ and Address.Line1 = Payment.Address.Street1. \\
+
+\subsection{User Story 5 – Source Database to Target (Decommissioning Migration)}
+Story \\
+%As an implementation specialist, I want to load data from 3 different sources into the Source database used by our retirement plan administration system: \\
+%•	Payroll data provided from an Target employer, \\
+%•	Implementation retiree data provided from another Target annuity Payer, and \\
+%•	Implementation data provided from an Target prior administrator. \\
+%Data will be loaded based on business rules. \\
+
+\begin{equation}
+\begin{tikzpicture}[penetration=0, unoriented WD, spacing=50pt, pack size=25pt]
+  \begin{scope}[font=\small]
+  	\node[pack, minimum width] (1) {Source Database};
+	\node[text width=4cm, right=1 of 1] (AuxNode01) {};
+	\node[pack, minimum width, above=of AuxNode01] (2) {Target Annuity Payor Data};
+	\node[pack, minimum width, below=of AuxNode01] (3) {Target Future Administrator Data};
+	\node[outer pack, fit=(1) (2) (3)] (outer) {};
+  \end{scope}
+	\begin{scope}[font=\fontsize{5pt}{0}\selectfont]
+  		\draw [arrow] (1) to
+			node[pos=-.1] {$$}
+			node[pos=.5, link, label={[above, font=\footnotesize]:$$}] {}
+			node[pos=1.1] {$$}
+			(2);
+		\draw [arrow] (1) to
+			node[pos=-.1] {$$}
+			node[pos=.5, link, label={[above, font=\footnotesize]:$F$}] {}
+			node[pos=1.1] {$$}
+			(3);
+  \end{scope}
+\end{tikzpicture}
+\end{equation} \\
+The following sections provide details of the functor F from the Source Database to the database of the successor plan administrator.  In the pilot, we used the RUPA Source database as the source and Target (OpenPro's ERP) database as the target of the functor F.
+
+
+
+%\bibliography{references}{}
+%\bibliographystyle{plain}
+
+\end{document}
